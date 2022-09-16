@@ -42,6 +42,8 @@ function getDefaultCounts() {
     }, {});
 }
 
+// tally, for each year, how many entries were
+// submitted for each day of the competition
 function countSubmissionPerDayPerYear(lines) {
   const daysPerYear = {};
 
@@ -56,9 +58,25 @@ function countSubmissionPerDayPerYear(lines) {
   return daysPerYear;
 }
 
+// convert the tally into an array of {x: day, y: count, z: year}
+// for D3's younger sibbling Plot
+function toPlot(yearDayCount) {
+  const data = [];
+
+  Object.entries(yearDayCount).forEach(([year, daysCount]) => {
+    Object.entries(daysCount).forEach(([day, count]) => {
+      data.push({day, count, year})
+    })
+  })
+
+  return data;
+}
+
 const lines = parseData(readFile('./data/raw/js13k-timestamps.txt'));
 const yearlySubmissionDayCounts = countSubmissionPerDayPerYear(lines);
+const data = toPlot(yearlySubmissionDayCounts);
 
-console.log(yearlySubmissionDayCounts);
+// console.log(yearlySubmissionDayCounts);
+console.log(JSON.stringify(data));
 
 
