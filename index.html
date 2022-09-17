@@ -5,13 +5,21 @@
 
   document.body.appendChild(
     Plot.plot({
+      // indicates which color represent which year
+      color: {
+        legend: true
+      },
+      height: 500,
+      width: 1280,
       y: {
         grid: true,
-        label: "entries"
+        label: "# of entries"
       },
+      // renders day of submission on x axis, # of entries on y axis
+      // and one line per year (z axis), with a different color per year
       marks: [
         Plot.ruleY([0]),
-        Plot.line(data, {x: "day", y: "count", z: "year", stroke: "year"})
+        Plot.line(data, { x: "day", y: "count", z: "year", stroke: "year" })
       ]
     })
   )
