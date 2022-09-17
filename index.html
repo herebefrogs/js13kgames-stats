@@ -5,22 +5,29 @@
 
   document.body.appendChild(
     Plot.plot({
-      height: 500,
-      width: 1280,
+      height: 800,
+      width: 1600,
       // indicates which color represent which year
       color: {
         legend: true,
         scheme: "spectral"
       },
+      x: {
+        axis: null,
+      },
       y: {
         grid: true,
         label: "# of entries"
+      },
+      facet: {
+        data,
+        x: "day"
       },
       // renders day of submission on x axis, # of entries on y axis
       // and one line per year (z axis), with a different color per year
       marks: [
         Plot.ruleY([0]),
-        Plot.barY(data, { x: "day", y: "count", fill: "year" })
+        Plot.barY(data, { x: "year", y: "count", fill: "year" })
       ]
     })
   )
