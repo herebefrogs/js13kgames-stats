@@ -32,6 +32,7 @@ function getCompetitionDates() {
   return dates;
 }
 
+// associate a 0 count to each competition date
 function getDefaultCounts() {
   return getCompetitionDates()
     .reduce((counts, date) => {
@@ -42,8 +43,7 @@ function getDefaultCounts() {
 
 // tally, for each year, how many entries were
 // submitted for each day of the competition
-
-function countSubmissionPerDayPerYear(lines) {
+function countDailyEntriesPerYear(lines) {
   const daysPerYear = {};
 
   lines.forEach(([year, date, time]) => {
@@ -52,7 +52,7 @@ function countSubmissionPerDayPerYear(lines) {
     daysPerYear[year] ||= getDefaultCounts();
 
     // Submissions on 09-14 are usually to fix
-    //  a broken ZIP for entries already submitted,
+    // a broken ZIP for entries already submitted,
     // so they shouldn't be counted again
     if (date !== '09-14') {
       daysPerYear[year][date] += 1;
@@ -77,7 +77,7 @@ function toPlot(yearDayCount) {
 }
 
 const lines = parseData(readFile('./data/raw/js13k-timestamps.txt'));
-const yearlySubmissionDayCounts = countSubmissionPerDayPerYear(lines);
+const yearlySubmissionDayCounts = countDailyEntriesPerYear(lines);
 const data = toPlot(yearlySubmissionDayCounts);
 
 writeFileSync(

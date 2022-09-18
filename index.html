@@ -41,7 +41,8 @@
 
   // grab the range of colors used by the grouped bar chart above
   // so each individual year chart below can be filled with the same color
-  const yearColors = Array.from(document.querySelectorAll('svg')).map(node => node.attributes['fill'].value);
+  // Note: this only works if no other chart than the grouped bar chart has been inserted yet
+  const yearColors = Utils.colorsFromGroupedBarChartLegend();
 
   Object.keys(years).forEach((year, i) => {
     // TODO that shenanigan should really be in ETL
