@@ -1,5 +1,4 @@
-import { readFileSync } from 'node:fs';
-import { get } from 'node:https';
+import { readFileSync, writeFileSync } from 'node:fs';
 
 // read raw data dump
 function readFile(path) {
@@ -16,8 +15,7 @@ function parseData(content) {
 }
 
 // return all dates of the competition as MM-DD
-// from 08-13 to 09-14 (yes some entries are
-// submitted past the deadline)
+// from 08-13 to 09-13
 function getCompetitionDates() {
   const dates = [];
   for (let m = 8, d = 13;; d += 1) {
@@ -44,6 +42,7 @@ function getDefaultCounts() {
 
 // tally, for each year, how many entries were
 // submitted for each day of the competition
+
 function countSubmissionPerDayPerYear(lines) {
   const daysPerYear = {};
 
@@ -52,7 +51,12 @@ function countSubmissionPerDayPerYear(lines) {
     // if encountering year for 1st time
     daysPerYear[year] ||= getDefaultCounts();
 
-    daysPerYear[year][date] += 1;
+    // Submissions on 09-14 are usually to fix
+    //  a broken ZIP for entries already submitted,
+    // so they shouldn't be counted again
+    if (date !== '09-14') {
+      daysPerYear[year][date] += 1;
+    }
   })
 
   return daysPerYear;
@@ -76,7 +80,8 @@ const lines = parseData(readFile('./data/raw/js13k-timestamps.txt'));
 const yearlySubmissionDayCounts = countSubmissionPerDayPerYear(lines);
 const data = toPlot(yearlySubmissionDayCounts);
 
-// console.log(yearlySubmissionDayCounts);
-console.log(JSON.stringify(data));
-
+writeFileSync(
+  './data/processed/counts.js',
+  `export const counts = ${JSON.stringify(data)};\n`
+)
 
