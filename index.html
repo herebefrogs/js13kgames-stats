@@ -5,11 +5,7 @@
   import * as Utils from './utils.js';
   import { counts, years } from './data/processed/counts.js';
 
-  // remove days where no entry was submitted
-  // let data = counts.filter(d => d.count > 0)
-  let data = counts;
-
-  Utils.insertTitle("h2", "Daily entry submission (all years)");
+  Utils.insertTitle("h2", "Daily entry submission - All years");
   document.body.appendChild(
     Plot.plot({
       height: 800,
@@ -29,7 +25,7 @@
       },
       // group year of submission on the x axis, grouped per day
       facet: {
-        data,
+        data: counts,
         x: "day"
       },
       marks: [
@@ -37,25 +33,29 @@
         Plot.ruleY([0]),
         // render year of submission on x axis, # of entries on y axis
         // with a different color per year
-        Plot.barY(data, { x: "year", y: "count", fill: "year" })
+        Plot.barY(counts, { x: "year", y: "count", fill: "year" })
       ]
     })
   );
 
-  Object.keys(years).forEach(year => {
+
+  // grab the range of colors used by the grouped bar chart above
+  // so each individual year chart below can be filled with the same color
+  const yearColors = Array.from(document.querySelectorAll('svg')).map(node => node.attributes['fill'].value);
+
+  Object.keys(years).forEach((year, i) => {
     // TODO that shenanigan should really be in ETL
     const series = Object.entries(years[year]).map(([day, count]) => ({ day, count}));
+    const color = yearColors[i];
 
-    Utils.insertTitle("h2", `Daily entry submission (${year})`);
+    Utils.insertTitle("h2", `Daily entry submission - ${year}`);
     document.body.appendChild(
       Plot.plot({
         height: 640,
         width: 1600,
-        marginLeft: 50,
         // indicate which color represents which year
         color: {
-          legend: true,
-          scheme: "spectral"
+          range: [color]
         },
         y: {
           grid: true,
@@ -66,7 +66,7 @@
           Plot.ruleY([0]),
           // renders day of submission on x axis, # of entries on y axis
           // with a different color per year
-          Plot.barY(series, { x: "day", y: "count" })
+          Plot.barY(series, { x: "day", y: "count", fill: d => 1 })
         ]
       })
     );
