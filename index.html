@@ -3,7 +3,7 @@
 <script type="module">
   import * as Plot from 'https://cdn.skypack.dev/@observablehq/plot';
   import * as Utils from './utils.js';
-  import { countsAllYear, countsPerYear } from './data/processed/data.js';
+  import { countsAllYear, countsPerYear, firstEntryPerYear } from './data/processed/data.js';
 
   Utils.insertTitle("h2", "Daily entry submission - All years");
   document.body.appendChild(
@@ -15,7 +15,7 @@
         legend: true,
         scheme: "spectral"
       },
-      // don't render year labels on the x-axis
+      // don't render year labels on the x-axis of each facet
       x: {
         axis: null
       },
@@ -26,6 +26,7 @@
       // group year of submission on the x axis, grouped per day
       facet: {
         data: countsAllYear,
+        // TODO can I rotate the day label by 90 to take less space?
         x: "day"
       },
       marks: [
@@ -45,8 +46,7 @@
   const yearColors = Utils.colorsFromGroupedBarChartLegend();
 
   Object.keys(countsPerYear).forEach((year, i) => {
-    // TODO that shenanigan should really be in ETL
-    const series = Object.entries(countsPerYear[year]).map(([day, count]) => ({ day, count}));
+    const series = countsPerYear[year];
     const color = yearColors[i];
 
     Utils.insertTitle("h2", `Daily entry submission - ${year}`);
@@ -71,5 +71,38 @@
         ]
       })
     );
-  })
+  });
+
+  Utils.insertTitle("h2", `First entry - All years`);
+    document.body.appendChild(
+      Plot.plot({
+        height: 320,
+        width: 1000,
+        // indicate which color represents which year
+        color: {
+          legend: true,
+          scheme: "spectral"
+        },
+        // don't render year labels on the x-axis of each facet
+        x: {
+          axis: null
+        },
+        y: {
+          grid: true,
+          label: "# of entries"
+        },
+        // group year of submission on the x axis, grouped per day
+        facet: {
+          data: firstEntryPerYear,
+          x: "day"
+        },
+        marks: [
+          // render a horizontal line for 0 count
+          Plot.ruleY([0]),
+        // render year of submission on x axis, # of entries on y axis
+        // with a different color per year
+          Plot.barY(firstEntryPerYear, { x: "year", y: "count", fill: "year" })
+        ]
+      })
+    );
 </script>

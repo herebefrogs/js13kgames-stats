@@ -64,7 +64,7 @@ function countDailyEntriesPerYear(lines) {
 
 // convert the tally into an array of {x: day, y: count, z: year}
 // for D3's younger sibbling Plot
-function toPlot(yearDayCount) {
+function flattenHashToArray(yearDayCount) {
   const data = [];
 
   Object.entries(yearDayCount).forEach(([year, daysCount]) => {
@@ -76,13 +76,40 @@ function toPlot(yearDayCount) {
   return data;
 }
 
+function dailyCountHashToArray(countsAllYear) {
+  const data = {};
+
+  Object.entries(countsAllYear).forEach(([year, daysCount]) => {
+    data[year] = Object.entries(daysCount).map(([day, count]) => ({ day, count}))
+  });
+
+  return data;
+}
+
+function findFirstEntryPerYear(countsPerYear) {
+  const data = [];
+
+  Object.entries(countsPerYear).forEach(([year, daysCount]) => {
+    const firstEntry = daysCount.find(d => d.count > 0);
+    data.push({
+      year,
+      ...firstEntry
+    })
+  })
+
+  return data;
+}
+
 const lines = parseData(readFile('./data/raw/js13k-timestamps.txt'));
-const yearlySubmissionDayCounts = countDailyEntriesPerYear(lines);
-const data = toPlot(yearlySubmissionDayCounts);
+const countsAllYear = countDailyEntriesPerYear(lines);
+const data = flattenHashToArray(countsAllYear);
+const countsPerYear = dailyCountHashToArray(countsAllYear);
+const firstEntryPerYear = findFirstEntryPerYear(countsPerYear);
 
 writeFileSync(
   './data/processed/data.js',
   `export const countsAllYear = ${JSON.stringify(data)};\n` +
-  `export const countsPerYear = ${JSON.stringify(yearlySubmissionDayCounts)};\n`
+  `export const countsPerYear = ${JSON.stringify(countsPerYear)};\n` +
+  `export const firstEntryPerYear = ${JSON.stringify(firstEntryPerYear)};\n`
 )
 
