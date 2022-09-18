@@ -4,4 +4,11 @@ function insertTitle(nodeType, msg) {
   document.body.appendChild(title);
 }
 
-export { insertTitle };
+function colorsFromGroupedBarChartLegend() {
+  return Array.from(document.querySelectorAll('figure div svg')).map(node => node.attributes['fill'].value);
+}
+
+export {
+  colorsFromGroupedBarChartLegend,
+  insertTitle
+};
