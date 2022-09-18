@@ -81,8 +81,8 @@ const yearlySubmissionDayCounts = countDailyEntriesPerYear(lines);
 const data = toPlot(yearlySubmissionDayCounts);
 
 writeFileSync(
-  './data/processed/counts.js',
-  `export const counts = ${JSON.stringify(data)};\n` +
-  `export const years = ${JSON.stringify(yearlySubmissionDayCounts)};\n`
+  './data/processed/data.js',
+  `export const countsAllYear = ${JSON.stringify(data)};\n` +
+  `export const countsPerYear = ${JSON.stringify(yearlySubmissionDayCounts)};\n`
 )
 
