@@ -1,7 +1,7 @@
-function insertH2(msg) {
-  const h2 = document.createElement('h2');
-  h2.append(msg);
-  document.body.appendChild(h2);
+function insertTitle(nodeType, msg) {
+  const title = document.createElement(nodeType);
+  title.append(msg);
+  document.body.appendChild(title);
 }
 
-export { insertH2 };
+export { insertTitle };

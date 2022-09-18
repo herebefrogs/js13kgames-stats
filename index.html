@@ -3,12 +3,13 @@
 <script type="module">
   import * as Plot from 'https://cdn.skypack.dev/@observablehq/plot';
   import * as Utils from './utils.js';
-  import { counts } from './data/processed/counts.js';
+  import { counts, years } from './data/processed/counts.js';
 
   // remove days where no entry was submitted
-  let data = counts.filter(d => d.count > 0)
+  // let data = counts.filter(d => d.count > 0)
+  let data = counts;
 
-  Utils.insertH2("Daily entry submission (all years)");
+  Utils.insertTitle("h2", "Daily entry submission (all years)");
   document.body.appendChild(
     Plot.plot({
       height: 800,
@@ -41,36 +42,33 @@
     })
   );
 
-  Utils.insertH2("Daily entry submission (per year)");
-  document.body.appendChild(
-    Plot.plot({
-      height: 6400,
-      width: 1600,
-      // indicate which color represents which year
-      color: {
-        legend: true,
-        scheme: "spectral"
-      },
-      x: {
-        nice: true
-      },
-      y: {
-        grid: true,
-        label: "# of entries"
-      },
-      // separate each year as a different graph,
-      // stacked vertically one below the other
-      facet: {
-        data,
-        y: "year"
-      },
-      marks: [
-        // render a horizontal line for 0 count
-        Plot.ruleY([0]),
-        // renders day of submission on x axis, # of entries on y axis
-        // with a different color per year
-        Plot.barY(data, { x: "day", y: "count", fill: "year" })
-      ]
-    })
-  );
+  Object.keys(years).forEach(year => {
+    // TODO that shenanigan should really be in ETL
+    const series = Object.entries(years[year]).map(([day, count]) => ({ day, count}));
+
+    Utils.insertTitle("h2", `Daily entry submission (${year})`);
+    document.body.appendChild(
+      Plot.plot({
+        height: 640,
+        width: 1600,
+        marginLeft: 50,
+        // indicate which color represents which year
+        color: {
+          legend: true,
+          scheme: "spectral"
+        },
+        y: {
+          grid: true,
+          label: "# of entries"
+        },
+        marks: [
+          // render a horizontal line for 0 count
+          Plot.ruleY([0]),
+          // renders day of submission on x axis, # of entries on y axis
+          // with a different color per year
+          Plot.barY(series, { x: "day", y: "count" })
+        ]
+      })
+    );
+  })
 </script>

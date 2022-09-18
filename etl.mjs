@@ -25,7 +25,7 @@ function getCompetitionDates() {
       m += 1;
       d = 0;    // I could have used d %= 32 to wrap around but that's too smart
     }
-    else if (m === 9 && d === 14) {
+    else if (m === 9 && d === 13) {
       break;
     }
   }
@@ -82,6 +82,7 @@ const data = toPlot(yearlySubmissionDayCounts);
 
 writeFileSync(
   './data/processed/counts.js',
-  `export const counts = ${JSON.stringify(data)};\n`
+  `export const counts = ${JSON.stringify(data)};\n` +
+  `export const years = ${JSON.stringify(yearlySubmissionDayCounts)};\n`
 )
 
